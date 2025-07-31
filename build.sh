@@ -65,15 +65,8 @@ DEFCONFIG="lavender_defconfig"
 
 # Check for compiler
 if [ ! -d "$TOOLCHAIN_DIRECTORY" ]; then
-    mkdir $TOOLCHAIN_DIRECTORY/custom-clang -p
-    wget -q https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/tags/android-13.0.0_r13/clang-r450784d.tar.gz -O file.tar.gz
-    tar -xzf file.tar.gz -C $TOOLCHAIN_DIRECTORY/custom-clang
+	git clone --depth=1 https://gitlab.com/Project-Nexus/nexus-clang.git -b nexus-14 $TOOLCHAIN_DIRECTORY/custom-clang
 fi
-
-rm -rf KernelSU-Next
-git submodule update --init --recursive
-sed -i '16s/default y/default n/' KernelSU-Next/kernel/Kconfig
-sed -n '16p' KernelSU-Next/kernel/Kconfig
 
 if [ -d "$TOOLCHAIN_DIRECTORY/custom-clang" ]; then
     echo -e "${bldgrn}"
@@ -118,10 +111,10 @@ if [ $SUBNAME == "none" ]; then
     SUBNAME=$DATE
 fi
 
-cp out/arch/arm64/boot/Image.gz-dtb anykernel
+curl bashupload.com -T out/arch/arm64/boot/Image.gz-dtb
 cd anykernel
 zip -r9 ../Sus-$SUBNAME.zip * -x .git README.md *placeholder
-curl bashupload.com -T ../Sus-$SUBNAME.zip
+#curl bashupload.com -T ../Sus-$SUBNAME.zip
 cd ..
 rm -rf anykernel
 echo "The path of the kernel.zip is: $(pwd)/Sus-$SUBNAME.zip"
